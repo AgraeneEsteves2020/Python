@@ -1,0 +1,49 @@
+# Importando as bibliotecas necessárias
+from bs4 import BeautifulSoup
+import requests
+
+# URL da página web a ser raspada
+url = 'https://mercadolivre.com'
+
+# Enviar uma solicitação GET para a página
+response = requests.get(url)
+
+# Verificar se a solicitação foi bem-sucedida (código de status 200)
+if response.status_code == 200:
+    # Criar um objeto BeautifulSoup para analisar o conteúdo HTML da página
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # Encontrar o primeiro elemento HTML correspondente a uma tag específica
+    title_tag = soup.find('title')
+
+    # Exibir o texto dentro da tag <title>
+    print(f'Título da Página: {title_tag.text}')
+
+    # Encontrar todos os elementos HTML correspondentes a uma tag específica
+    all_links = soup.find_all('a')
+
+    # Exibir os URLs de todos os links na página
+    for link in all_links:
+        print(link.get('href'))
+
+    # Acessar atributos de um elemento HTML
+    img_src = soup.find('img')['src']
+
+    # Navegar pela árvore HTML para encontrar elementos aninhados
+    div_content = soup.find('div', class_='conteudo')
+
+    # Exibir o texto dentro da tag <div class="conteudo">
+    print('Conteúdo da Div:')
+    print(div_content.text.strip())
+
+    # Encontrar todos os elementos com uma classe específica
+    all_elements_with_class = soup.find_all(class_='minha-classe')
+
+    # Encontrar o próximo elemento irmão
+    next_sibling = title_tag.find_next_sibling()
+
+    # Encontrar todos os elementos correspondentes a um seletor CSS
+    elements_with_selector = soup.select('.minha-classe')
+
+else:
+    print(f"A solicitação falhou com o código de status: {response.status_code}")

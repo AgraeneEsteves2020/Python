@@ -1,0 +1,64 @@
+Pré-requisitos:
+Instale o Selenium: pip install selenium
+Instale o BeautifulSoup: pip install beautifulsoup4
+Baixe o WebDriver do Selenium para o navegador de sua escolha (por exemplo, ChromeDriver) e certifique-se de que está no seu PATH
+
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from bs4 import BeautifulSoup
+import time
+from datetime import datetime
+from plyer import notification  # Instale usando: pip install plyer
+
+# URL do produto que você deseja monitorar
+url_produto = "URL_DO_SEU_PRODUTO"
+
+# Configurações do WebDriver (certifique-se de apontar para o local correto do seu driver)
+driver = webdriver.Chrome(executable_path="C:/caminho/para/chromedriver.exe")
+
+# Função para extrair informações da página
+def extrair_informacoes():
+    try:
+        # Abre a página do produto
+        driver.get(url_produto)
+        time.sleep(3)  # Aguarda a página carregar (pode ser ajustado)
+
+        # Extração de informações com BeautifulSoup
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        
+        # Ajuste conforme a estrutura HTML do site específico
+        preco = soup.find('span', {'class': 'classe-do-preco'}).text
+        nome_produto = soup.find('h1', {'class': 'classe-do-nome'}).text
+        
+        return nome_produto, preco
+    except Exception as e:
+        print(f"Erro ao extrair informações: {e}")
+        return None, None
+
+# Função para notificação
+def enviar_notificacao(nome_produto, preco_antigo, preco_atual):
+    mensagem = f"O preço do produto {nome_produto} mudou!\nPreço anterior: {preco_antigo}\nNovo preço: {preco_atual}"
+    notification.notify(
+        title="Monitoramento de Preços",
+        message=mensagem,
+        app_name="Monitor de Preços",
+    )
+
+# Loop de monitoramento
+while True:
+    nome_produto, preco_atual = extrair_informacoes()
+
+    if nome_produto and preco_atual:
+        # Verifica se houve alteração no preço
+        if 'preco_antigo' in locals() and preco_atual != preco_antigo:
+            enviar_notificacao(nome_produto, preco_antigo, preco_atual)
+
+        preco_antigo = preco_atual
+
+    # Intervalo entre as verificações (em segundos)
+    time.sleep(3600)  # Verifica a cada 1 hora (pode ser ajustado)
+
+
+
+
+

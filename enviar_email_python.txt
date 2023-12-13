@@ -1,0 +1,36 @@
+{
+  "email": "seu_email@gmail.com",
+  "senha": "sua_senha"
+}
+
+
+import json
+import smtplib
+from email.mime.text import MIMEText
+
+def carregar_configuracoes():
+    with open('config.json', 'r') as arquivo:
+        configuracoes = json.load(arquivo)
+    return configuracoes
+
+def enviar_email(destinatarios, assunto, corpo):
+    configuracoes = carregar_configuracoes()
+    remetente = configuracoes['email']
+    senha = configuracoes['senha']
+
+    mensagem = MIMEText(corpo)
+    mensagem['Subject'] = assunto
+    mensagem['From'] = remetente
+    mensagem['To'] = ', '.join(destinatarios)
+
+    with smtplib.SMTP('smtp.gmail.com', 587) as servidor_smtp:
+        servidor_smtp.starttls()
+        servidor_smtp.login(remetente, senha)
+        servidor_smtp.sendmail(remetente, destinatarios, mensagem.as_string())
+
+# Exemplo de uso
+lista_destinatarios = ['destinatario1@example.com', 'destinatario2@example.com', 'destinatario3@example.com']
+assunto_email = 'Assunto do E-mail'
+corpo_email = 'Corpo do E-mail'
+
+enviar_email(lista_destinatarios, assunto_email, corpo_email)

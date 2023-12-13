@@ -1,0 +1,67 @@
+class Cliente:
+    def __init__(self, nome, sobrenome, cpf):
+        self.nome = nome
+        self.sobrenome = sobrenome
+        self.cpf = cpf
+
+    def __str__(self):
+        return f"Nome: {self.nome} {self.sobrenome}\nCPF: {self.cpf}"
+
+class Conta:
+    def __init__(self, cliente, saldo=0.0):
+        self.cliente = cliente
+        self.saldo = saldo
+
+    def depositar(self, valor):
+        if valor > 0:
+            self.saldo += valor
+            return f"Depósito de R${valor:.2f} realizado com sucesso."
+        else:
+            return "Valor de depósito inválido."
+
+    def sacar(self, valor):
+        if valor > 0 and valor <= self.saldo:
+            self.saldo -= valor
+            return f"Saque de R${valor:.2f} realizado com sucesso."
+        else:
+            return "Saldo insuficiente ou valor de saque inválido."
+
+    def verificar_saldo(self):
+        return f"Saldo atual: R${self.saldo:.2f}"
+
+# Função principal para interagir com o caixa eletrônico
+def main():
+    cliente1 = Cliente("João", "Silva", "123.456.789-00")
+    conta1 = Conta(cliente1, 1000.0)
+
+    while True:
+        print("\nOpções:")
+        print("1 - Verificar Saldo")
+        print("2 - Depositar")
+        print("3 - Sacar")
+        print("4 - Sair")
+
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == '1':
+            print(conta1.verificar_saldo())
+
+        elif opcao == '2':
+            valor = float(input("Digite o valor do depósito: "))
+            resultado = conta1.depositar(valor)
+            print(resultado)
+
+        elif opcao == '3':
+            valor = float(input("Digite o valor do saque: "))
+            resultado = conta1.sacar(valor)
+            print(resultado)
+
+        elif opcao == '4':
+            print("Encerrando a aplicação.")
+            break
+
+        else:
+            print("Opção inválida. Tente novamente.")
+
+if __name__ == "__main__":
+    main()
